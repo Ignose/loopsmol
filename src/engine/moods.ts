@@ -1,5 +1,4 @@
 import {
-  autosell,
   canEquip,
   Effect,
   equip,
@@ -50,7 +49,6 @@ import {
 } from "libram";
 import { asdonFillTo, asdonFualable } from "./resources";
 import { underStandard } from "../lib";
-import { pullStrategy } from "../tasks/pulls";
 
 function getRelevantEffects(): { [modifier: string]: Effect[] } {
   const result = {
@@ -285,11 +283,6 @@ export function customRestoreMp(target: number) {
   restoreMp(target);
   if (myMp() < target && myMp() < myMaxmp() && myMeat() < 90) {
     // Attempt to get more meat and try again
-    if (pullStrategy.pullIfReady($item`1,970 carat gold`)) {
-      autosell($item`1,970 carat gold`, 1);
-    } else if (pullStrategy.pullIfReady($item`1952 Mickey Mantle card`)) {
-      autosell($item`1952 Mickey Mantle card`, 1);
-    }
     restoreMp(target);
   }
 }

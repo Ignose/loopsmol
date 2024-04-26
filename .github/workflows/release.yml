@@ -1,47 +1,77 @@
-name: Release loopsmol
+name: Build smoliscasual
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "package.json"
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "package.json"
   workflow_dispatch:
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+env:
+  # Default version of Node.js for jobs
+  node-version: "18"
 
-    strategy:
-      matrix:
-        node-version: [18.x]
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/smoliscasual'
 
     steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: "main"
+      # Checkout source code
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      # Setup Nodejs
+      - name: Use Node.js ${{ env.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ env.node-version }}
+          cache: "npm"
 
-      - name: Build
-        run: |
-          yarn install
-          echo "export const lastCommitHash: string | undefined = \"$(git rev-parse --short HEAD)\";" > src/_git_commit.ts
-          yarn run build
-          git checkout src/_git_commit.ts
-          git checkout yarn.lock
+      # Setup Yarn
+      - name: Install yarn
+        run: npm install -g yarn
+
+      # Install dependencies
+      - name: Install build dependencies
+        run: yarn install
+
+      # Build script
       - run: |
-          git config user.name "Build Script"
-          git config user.email "<>"
+          yarn build
+          mkdir BUILD
+          cp -r KoLmafia/scripts BUILD/scripts
+          cp -r KoLmafia/dependencies.txt BUILD/dependencies.txt
+          cp -r README.md BUILD/README.md
+
+      # Synchronise & push BUILD directory to release branch
+      - name: Configure Git information
+        run: |
+          git config --global user.name "Build Script"
+          git config --global user.email "<>"
+
+      - name: Synchronize & push into release branch
+        run: |
           git fetch --all
-          SHA=$(git rev-parse --short HEAD)
-          cp KoLmafia/scripts/loopsmol/loopsmol_choice.ash KoLmafia/scripts/loopsmol/choice.ash 
-          git switch release
-          rm -rf scripts/
-          rm -rf ccs/
-          rm -rf relay/
-          mv KoLmafia/scripts/loopsmol/choice.ash KoLmafia/scripts/loopsmol/loopsmol_choice.ash
-          mv KoLmafia/* ./
-          rm -rf KoLmafia
-          git add scripts/
-          git add relay/
-          git commit -m "Build Mafia files for commit $SHA"
-          git push origin release
+          echo "Switching into smoliscasualRelease"
+          git stash && git stash clear
+          git switch smoliscasualRelease
+
+          # Push build into the release branch
+          shopt -s extglob
+          rm -rf !(BUILD)
+          mv BUILD/scripts scripts
+          mv BUILD/dependencies.txt dependencies.txt
+          mv BUILD/README.md README.md
+          rm -rf BUILD
+          git add scripts
+          git add dependencies.txt
+          git add README.md
+          git commit -m "Automated build"
+          git push -f origin smoliscasualRelease

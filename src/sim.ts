@@ -2,7 +2,6 @@ import {
   Familiar,
   getWorkshed,
   Item,
-  mallPrice,
   Monster,
   print,
   printHtml,
@@ -21,7 +20,6 @@ import {
   have,
   permedSkills,
 } from "libram";
-import { pullStrategy } from "./tasks/pulls";
 
 class Hardcoded {
   have: boolean;
@@ -464,25 +462,6 @@ function buildRecommendedSkillsList(): (Requirement & { thing: Skill })[] {
   ];
 }
 
-function buildPullList(optional: boolean): Requirement[] {
-  const result: Requirement[] = [];
-  for (const pull of pullStrategy.pulls) {
-    const items = pull.items().filter((item) => item) as Item[];
-
-    // Ignore dynamic item selection for now
-    if (items.length === 0) continue;
-
-    // For cheap items, we will just buy it during the run
-    const big_items = items.filter((item) => mallPrice(item) === 0 || mallPrice(item) > 200000);
-    // Ignore item lists where the IOTM is just a sub for a cheaper item,
-    // except still highlight GAP/navel ring.
-    if (big_items.length < items.length && pull.name !== "Runaway IoTM") continue;
-    if (pull.optional !== optional) continue;
-    result.push({ thing: big_items, why: pull.description ?? "Pull" });
-  }
-  return result;
-}
-
 function checkThing(thing: Thing): [boolean, string] {
   if (thing instanceof Hardcoded) return [thing.have, thing.name];
   if (thing instanceof Familiar) return [have(thing), thing.hatchling.name];
@@ -513,9 +492,7 @@ export function checkRequirements(): void {
 
   const categories: [string, Requirement[], boolean][] = [
     ["Skills (Required)", buildRequiredSkillsList(), true],
-    ["Expensive Pulls (Required)", buildPullList(false), true],
     ["Skills (Optional/Recommended)", buildRecommendedSkillsList(), false],
-    ["Expensive Pulls (Optional)", buildPullList(true), false],
     ["IoTMs", buildIotmList(), false],
     ["Miscellany", buildMiscList(), false],
     ["Combat Lover's Locket Monsters", buildLocketList(), false],
