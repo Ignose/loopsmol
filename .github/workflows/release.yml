@@ -20,7 +20,7 @@ env:
 jobs:
   build-push:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/smoliscasual'
+    if: github.ref == 'refs/heads/loop-casual-2024'
 
     steps:
       # Checkout source code
@@ -47,7 +47,6 @@ jobs:
           yarn build
           mkdir BUILD
           cp -r KoLmafia/scripts BUILD/scripts
-          cp -r KoLmafia/dependencies.txt BUILD/dependencies.txt
           cp -r README.md BUILD/README.md
 
       # Synchronise & push BUILD directory to release branch
