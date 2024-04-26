@@ -395,6 +395,7 @@ const Dome: Task[] = [
   {
     name: "Palindome Dog",
     after: ["Talisman", "Manor/Bedroom Camera"],
+    acquire: [{ item: $item`disposable instant camera` }],
     completed: () => have($item`photograph of a dog`) || step("questL11Palindome") >= 3,
     prepare: () => tuneSnapper($phylum`dudes`),
     do: $location`Inside the Palindome`,
@@ -451,6 +452,7 @@ const Dome: Task[] = [
   {
     name: "Palindome Photos",
     after: ["Palindome Dog", "Palindome Dudes"],
+    acquire: [{ item: $item`wet stunt nut stew` }],
     completed: () =>
       (have($item`photograph of a red nugget`) &&
         have($item`photograph of God`) &&
@@ -465,20 +467,6 @@ const Dome: Task[] = [
         modifier: "-combat, item",
         avoid: $items`broken champagne bottle`,
       };
-    },
-    combat: new CombatStrategy().killItem($monsters`Bob Racecar, Racecar Bob`),
-    limit: { soft: 20 },
-  },
-  {
-    name: "Palindome Nuts",
-    after: ["Palindome Dog", "Palindome Dudes", "Palindome Photos"],
-    do: $location`Inside the Palindome`,
-    completed: () =>
-      have($item`stunt nuts`) || have($item`wet stunt nut stew`) || step("questL11Palindome") >= 5,
-    outfit: {
-      equip: $items`Talisman o' Namsilat`,
-      modifier: "item",
-      avoid: $items`broken champagne bottle`,
     },
     combat: new CombatStrategy().killItem($monsters`Bob Racecar, Racecar Bob`),
     limit: { soft: 20 },

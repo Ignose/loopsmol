@@ -282,6 +282,7 @@ const Door: Task[] = [
       "Digital Lock",
       "Skeleton Lock",
     ],
+    acquire: [{ item: $item`Wand of Nagamar` }],
     completed: () => step("questL13Final") > 5,
     do: () => visitUrl("place.php?whichplace=nstower_door&action=ns_doorknob"),
     limit: { tries: 1 },

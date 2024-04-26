@@ -4,6 +4,17 @@ import { Task } from "./engine/task";
 export const ROUTE_WAIT_TO_NCFORCE = 30;
 
 export const routing: string[] = [
+  "Diet/Numberology", // Numberology is always ready at the start of the day
+  "Diet/Sausage", // Eat magical sausages as soon as they are obtained
+  "Diet/Hourglass",
+
+  // Pickup items
+  "Misc/Short Cook",
+  "Misc/Floundry",
+  "Misc/Voting",
+  "Misc/Acquire Kgnee",
+  "Misc/Acquire FamEquip",
+
   // Break pvp stone ASAP
   "Misc/Break Stone",
   "Pull/All",

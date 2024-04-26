@@ -13,6 +13,7 @@ import {
 } from "kolmafia";
 import { $familiar, $item, $location, $monsters, $stat, get, have, Snapper } from "libram";
 import { makeValue, ValueFunctions } from "garbo-lib";
+import { args } from "./args";
 
 export function debug(message: string, color?: string): void {
   if (color) {
@@ -141,4 +142,8 @@ export function garboValue(item: Item, useHistorical = false): number {
 
 export function garboAverageValue(...items: Item[]): number {
   return garboValueFunctions().averageValue(...items);
+}
+
+export function buyStrategy(item: Item, number: number, turns: number): boolean {
+  return garboValue(item) * number < turns * args.minor.voa;
 }

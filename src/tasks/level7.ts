@@ -3,6 +3,7 @@ import {
   changeMcd,
   cliExecute,
   currentMcd,
+  initiativeModifier,
   Item,
   myBasestat,
   myClass,
@@ -69,6 +70,12 @@ const Alcove: Task[] = [
       if (have($item`old bronzer`)) ensureEffect($effect`Sepia Tan`);
       if (have($item`ant agonist`)) ensureEffect($effect`All Fired Up`);
       if (have($item`Angry Farmer candy`)) ensureEffect($effect`Sugar Rush`);
+      if (have($item`ear candle`) && initiativeModifier() < 850)
+        ensureEffect($effect`Clear Ears, Can't Lose`);
+      if (have($item`panty raider camouflage`) && initiativeModifier() < 850)
+        ensureEffect($effect`Hiding in Plain Sight`);
+      if (have($item`Freddie's blessing of Mercury`) && initiativeModifier() < 850)
+        ensureEffect($effect`You're High as a Crow, Marty`);
 
       if (numericModifier("Initiative") < 850 && have($skill`Silent Hunter`)) {
         if (myClass() === $class`Seal Clubber`) ensureWithMPSwaps($effects`Silent Hunting`);
@@ -85,6 +92,13 @@ const Alcove: Task[] = [
         visitUrl("runskillz.php?action=Skillz&whichskill=7419&targetplayer=0&pwd&quantity=1");
       }
     },
+    acquire: [
+      { item: $item`gravy boat` },
+      // Init boosters
+      { item: $item`ear candle`, price: 2000, optional: true },
+      { item: $item`panty raider camouflage`, price: 2000, optional: true },
+      { item: $item`Freddie's blessing of Mercury`, price: 2000, optional: true },
+    ],
     ready: () => myBasestat($stat`Muscle`) >= 62,
     completed: () => get("cyrptAlcoveEvilness") <= 13,
     do: $location`The Defiled Alcove`,

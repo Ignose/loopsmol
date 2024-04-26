@@ -181,6 +181,7 @@ const Manor2: Task[] = [
   {
     name: "Bedroom",
     after: ["Start Floor2"],
+    acquire: [{ item: $item`disposable instant camera` }],
     completed: () =>
       (have($item`Lady Spookyraven's finest gown`) || step("questM21Dance") >= 2) &&
       have($item`Lord Spookyraven's spectacles`),

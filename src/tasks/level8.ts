@@ -1,30 +1,24 @@
-import { Item, itemAmount, numericModifier, use, visitUrl } from "kolmafia";
+import { Item, itemAmount, numericModifier, visitUrl } from "kolmafia";
 import {
   $effect,
   $familiar,
   $item,
-  $items,
   $location,
   $monster,
-  $monsters,
   $skill,
-  Counter,
   ensureEffect,
   get,
   have,
   Macro,
 } from "libram";
 import { Quest } from "../engine/task";
-import { OutfitSpec, step } from "grimoire-kolmafia";
+import { step } from "grimoire-kolmafia";
 import { Priorities } from "../engine/priority";
 import { CombatStrategy } from "../engine/combat";
 import { atLevel } from "../lib";
 import { councilSafe } from "./level12";
-import { fillHp } from "../engine/moods";
-import { summonStrategy } from "./summons";
 import { coldPlanner } from "../engine/outfit";
 import { trainSetAvailable } from "./misc";
-import { tryPlayApriling } from "../engine/resources";
 
 export const McLargeHugeQuest: Quest = {
   name: "McLargeHuge",
@@ -49,109 +43,35 @@ export const McLargeHugeQuest: Quest = {
       freeaction: true,
     },
     {
-      name: "Clover Ore",
-      after: ["Trapper Request", "Pull/Ore", "Misc/Hermit Clover"],
-      ready: () =>
-        have($item`11-leaf clover`) &&
-        summonStrategy.getSourceFor($monster`mountain man`) === undefined &&
-        oresNeeded() > 0,
-      prepare: () => {
-        if (!have($effect`Lucky!`)) use($item`11-leaf clover`);
-      },
-      completed: () =>
-        step("questL08Trapper") >= 2 ||
-        (get("trapperOre") !== "" && itemAmount(Item.get(get("trapperOre"))) >= 3) ||
-        (itemAmount($item`asbestos ore`) >= 3 &&
-          itemAmount($item`chrome ore`) >= 3 &&
-          itemAmount($item`linoleum ore`) >= 3),
-      do: $location`Itznotyerzitz Mine`,
-      limit: { tries: 2 },
-    },
-    {
-      name: "Goatlet",
-      after: ["Trapper Request"],
-      ready: () =>
-        Counter.get("Spooky VHS Tape Monster") === 0 ||
-        get("spookyVHSTapeMonster") !== $monster`dairy goat`,
-      completed: () => itemAmount($item`goat cheese`) >= 3 || step("questL08Trapper") >= 2,
-      do: $location`The Goatlet`,
-      outfit: {
-        modifier: "item",
-        avoid: $items`broken champagne bottle`,
-        familiar: $familiar`Grey Goose`,
-      },
-      combat: new CombatStrategy()
-        .macro(() => {
-          if (itemAmount($item`goat cheese`) === 0)
-            return Macro.trySkill($skill`Emit Matter Duplicating Drones`).tryItem(
-              $item`Spooky VHS Tape`
-            );
-          return new Macro();
-        }, $monster`dairy goat`)
-        .killItem($monster`dairy goat`)
-        .banish($monsters`drunk goat, sabre-toothed goat`),
-      limit: { soft: 15 },
-    },
-    {
-      name: "Trapper Return",
-      after: ["Goatlet", "Pull/Ore", "Summon/Mountain Man", "Clover Ore"],
-      ready: () => get("trapperOre") !== "" && itemAmount(Item.get(get("trapperOre"))) >= 3, // Checked here since there is no task for Trainset ores
+      name: "Ores",
+      after: ["Start"],
+      acquire: [
+        { item: $item`asbestos ore`, num: 3 },
+        { item: $item`chrome ore`, num: 3 },
+        { item: $item`linoleum ore`, num: 3 },
+        { item: $item`goat cheese`, num: 3 },
+      ],
       completed: () => step("questL08Trapper") >= 2,
-      do: () => visitUrl("place.php?whichplace=mclargehuge&action=trappercabin"),
+      do: (): void => {
+        visitUrl("place.php?whichplace=mclargehuge&action=trappercabin"); // request ore
+        visitUrl("place.php?whichplace=mclargehuge&action=trappercabin"); // provide
+      },
       limit: { tries: 1 },
       freeaction: true,
     },
     {
-      name: "Ninja",
-      after: ["Trapper Return", "Palindome/Cold Snake"],
-      completed: () =>
-        (have($item`ninja rope`) && have($item`ninja carabiner`) && have($item`ninja crampons`)) ||
-        step("questL08Trapper") >= 3,
-      prepare: () => {
-        fillHp();
-        tryPlayApriling("+combat");
-      },
-      ready: () => !get("noncombatForcerActive"),
-      do: $location`Lair of the Ninja Snowmen`,
-      outfit: () => {
-        const spec: OutfitSpec = {
-          modifier: "50 combat, init",
-          skipDefaults: true,
-          familiar: $familiar`Jumpsuited Hound Dog`,
-          avoid: $items`miniature crystal ball`,
-        };
-        if (have($familiar`Trick-or-Treating Tot`) && !have($item`li'l ninja costume`))
-          spec.familiar = $familiar`Trick-or-Treating Tot`;
-        if (
-          have($item`latte lovers member's mug`) &&
-          get("latteModifier").includes("Combat Rate: 10")
-        ) {
-          // Ensure kramco does not override +combat
-          spec.offhand = $item`latte lovers member's mug`;
-        }
-        return spec;
-      },
-      limit: { soft: 20 },
-      combat: new CombatStrategy().killHard([
-        $monster`Frozen Solid Snake`,
-        $monster`ninja snowman assassin`,
-      ]),
-      orbtargets: () => undefined, // no assassins in orbs
-    },
-    {
       name: "Climb",
-      after: ["Trapper Return", "Ninja"],
+      after: ["Trapper Return", "Palindome/Cold Snake"],
+      acquire: [
+        { item: $item`ninja rope` },
+        { item: $item`ninja carabiner` },
+        { item: $item`ninja crampons` },
+      ],
       completed: () => step("questL08Trapper") >= 3,
-      ready: () => coldPlanner.maximumPossible(true) >= 5,
-      prepare: () => {
-        if (numericModifier("cold resistance") < 5) ensureEffect($effect`Red Door Syndrome`);
-        if (numericModifier("cold resistance") < 5)
-          throw `Unable to ensure cold res for The Icy Peak`;
-      },
       do: (): void => {
         visitUrl("place.php?whichplace=mclargehuge&action=cloudypeak");
       },
-      outfit: () => coldPlanner.outfitFor(5),
+      outfit: { modifier: "cold res 5min" },
       limit: { tries: 1 },
     },
     {

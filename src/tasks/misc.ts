@@ -98,15 +98,9 @@ export const MiscQuest: Quest = {
   tasks: [
     {
       name: "Unlock Beach",
-      after: ["Sewer Accordion", "Sewer Saucepan", "Sewer Totem"],
-      priority: () => Priorities.Free,
-      ready: () => myMeat() >= meatBuffer + (knollAvailable() ? 538 : 5000),
+      after: [],
       completed: () => have($item`bitchin' meatcar`) || have($item`Desert Bus pass`),
-      do: () => {
-        if (knollAvailable()) cliExecute("acquire 1 bitchin' meatcar");
-        else cliExecute("acquire 1 desert bus pass");
-      },
-      outfit: { equip: $items`designer sweatpants` },
+      do: () => cliExecute("acquire 1 bitchin' meatcar"),
       limit: { tries: 1 },
       freeaction: true,
     },

@@ -1,16 +1,7 @@
 import {
-  buy,
   cliExecute,
-  closetAmount,
-  familiarWeight,
   Item,
-  itemAmount,
-  myAscensions,
-  myFamiliar,
   myHash,
-  myMeat,
-  putCloset,
-  takeCloset,
   use,
   visitUrl,
 } from "kolmafia";
@@ -32,8 +23,6 @@ import { Quest, Task } from "../engine/task";
 import { OutfitSpec, step } from "grimoire-kolmafia";
 import { Priorities } from "../engine/priority";
 import { CombatStrategy } from "../engine/combat";
-import { cosmicBowlingBallReady } from "../lib";
-import { fillHp } from "../engine/moods";
 import { tryForceNC, tryPlayApriling } from "../engine/resources";
 
 function manualChoice(whichchoice: number, option: number) {
@@ -71,19 +60,6 @@ const Temple: Task[] = [
     limit: { soft: 10 },
   },
   {
-    name: "Forest Fertilizer",
-    after: ["Mosquito/Burn Delay"],
-    prepare: () => {
-      tryForceNC();
-      tryPlayApriling("-combat");
-    },
-    completed: () => have($item`Spooky-Gro fertilizer`) || step("questM16Temple") === 999,
-    do: $location`The Spooky Forest`,
-    choices: { 502: 3, 506: 2, 507: 1, 334: 1 },
-    outfit: { modifier: "-combat" },
-    limit: { soft: 10 },
-  },
-  {
     name: "Forest Sapling",
     after: ["Mosquito/Burn Delay"],
     prepare: () => {
@@ -99,47 +75,16 @@ const Temple: Task[] = [
   {
     name: "Open Temple",
     after: ["Forest Coin", "Forest Map", "Forest Sapling", "Forest Fertilizer"],
+    acquire: [{ item: $item`Spooky-Gro fertilizer` }],
     completed: () => step("questM16Temple") === 999,
     do: () => use($item`Spooky Temple map`),
     limit: { tries: 1 },
     freeaction: true,
   },
   {
-    name: "Temple Wool",
-    after: ["Open Temple", "Misc/Hermit Clover"],
-    completed: () =>
-      itemAmount($item`stone wool`) >= 2 ||
-      (itemAmount($item`stone wool`) === 1 && have($item`the Nostril of the Serpent`)) ||
-      step("questL11Worship") >= 3,
-    prepare: () => {
-      if (
-        itemAmount($item`11-leaf clover`) > 1 &&
-        !have($effect`Lucky!`) &&
-        !have($item`industrial fire extinguisher`)
-      )
-        use($item`11-leaf clover`);
-    },
-    do: $location`The Hidden Temple`,
-    outfit: () => {
-      if (have($item`industrial fire extinguisher`) && get("_fireExtinguisherCharge") >= 10)
-        return { equip: $items`industrial fire extinguisher`, modifier: "+combat" };
-      else return { familiar: $familiar`Grey Goose`, modifier: "+combat, item" };
-    },
-    combat: new CombatStrategy()
-      .macro(
-        new Macro()
-          .trySkill($skill`Fire Extinguisher: Polar Vortex`)
-          .trySkill($skill`Fire Extinguisher: Polar Vortex`),
-        $monster`baa-relief sheep`
-      )
-      .macro(new Macro().trySkill($skill`Emit Matter Duplicating Drones`), $monster`Baa'baa'bu'ran`)
-      .killItem([$monster`baa-relief sheep`, $monster`Baa'baa'bu'ran`]),
-    choices: { 579: 2, 580: 1, 581: 3, 582: 1 },
-    limit: { soft: 20 },
-  },
-  {
     name: "Temple Nostril",
     after: ["Open Temple", "Temple Wool"],
+    acquire: [{ item: $item`stone wool` }],
     completed: () => have($item`the Nostril of the Serpent`) || step("questL11Worship") >= 3,
     do: $location`The Hidden Temple`,
     choices: { 579: 2, 582: 1 },
@@ -171,7 +116,7 @@ const Temple: Task[] = [
 const Apartment: Task[] = [
   {
     name: "Open Apartment",
-    after: ["Get Machete", "Open City"],
+    after: ["Open City"],
     completed: () => get("hiddenApartmentProgress") >= 1,
     do: $location`An Overgrown Shrine (Northwest)`,
     outfit: {
@@ -185,7 +130,7 @@ const Apartment: Task[] = [
   },
   {
     name: "Apartment Files", // Get the last McClusky files here if needed, as a backup plan
-    after: ["Open Apartment", "Office Files", "Banish Janitors"],
+    after: ["Open Apartment", "Office Files"],
     priority: () =>
       have($effect`Once-Cursed`) || have($effect`Twice-Cursed`) || have($effect`Thrice-Cursed`)
         ? Priorities.Effect
@@ -253,7 +198,7 @@ const Apartment: Task[] = [
 const Office: Task[] = [
   {
     name: "Open Office",
-    after: ["Get Machete", "Open City"],
+    after: ["Open City"],
     completed: () => get("hiddenOfficeProgress") >= 1,
     do: $location`An Overgrown Shrine (Northeast)`,
     combat: new CombatStrategy().killHard(),
@@ -267,7 +212,7 @@ const Office: Task[] = [
   },
   {
     name: "Office Files",
-    after: ["Open Office", "Banish Janitors"],
+    after: ["Open Office"],
     completed: () =>
       (have($item`McClusky file (page 1)`) &&
         have($item`McClusky file (page 2)`) &&
@@ -343,7 +288,7 @@ const Office: Task[] = [
 const Hospital: Task[] = [
   {
     name: "Open Hospital",
-    after: ["Get Machete", "Open City"],
+    after: ["Open City"],
     completed: () => get("hiddenHospitalProgress") >= 1,
     do: $location`An Overgrown Shrine (Southwest)`,
     combat: new CombatStrategy().killHard(),
@@ -357,7 +302,7 @@ const Hospital: Task[] = [
   },
   {
     name: "Hospital",
-    after: ["Open Hospital", "Banish Janitors"],
+    after: ["Open Hospital"],
     completed: () => get("hiddenHospitalProgress") >= 7,
     do: $location`The Hidden Hospital`,
     combat: new CombatStrategy()
@@ -393,10 +338,9 @@ const Hospital: Task[] = [
 const Bowling: Task[] = [
   {
     name: "Open Bowling",
-    after: ["Get Machete", "Open City"],
+    after: ["Open City"],
     completed: () => get("hiddenBowlingAlleyProgress") >= 1,
     do: $location`An Overgrown Shrine (Southeast)`,
-    combat: new CombatStrategy().killHard(),
     outfit: {
       equip: $items`antique machete`,
     },
@@ -407,75 +351,15 @@ const Bowling: Task[] = [
   },
   {
     name: "Bowling",
-    after: ["Open Bowling", "Banish Janitors"],
-    priority: () =>
-      get("camelSpit") === 100 && cosmicBowlingBallReady() && have($skill`Map the Monsters`)
-        ? Priorities.BestCosmicBowlingBall
-        : Priorities.None,
-    ready: () =>
-      myMeat() >= 500 &&
-      (!bowlingBallsGathered() || get("spookyVHSTapeMonster") !== $monster`pygmy bowler`),
-    acquire: [{ item: $item`Bowl of Scorpions`, optional: true }],
+    after: ["Open Bowling"],
+    acquire: [{ item: $item`bowling ball` }],
     completed: () => get("hiddenBowlingAlleyProgress") >= 7,
-    prepare: () => {
-      // Open the hidden tavern if it is available.
-      if (get("hiddenTavernUnlock") < myAscensions() && have($item`book of matches`)) {
-        use($item`book of matches`);
-        buy($item`Bowl of Scorpions`);
-      }
-      // Backload the bowling balls due to banish timers
-      if (!bowlingBallsGathered()) {
-        if (have($item`bowling ball`))
-          putCloset($item`bowling ball`, itemAmount($item`bowling ball`));
-      } else {
-        if (closetAmount($item`bowling ball`) > 0)
-          takeCloset($item`bowling ball`, closetAmount($item`bowling ball`));
-      }
-      if (myFamiliar() === $familiar`Melodramedary` && get("camelSpit") === 100) fillHp();
-    },
     do: $location`The Hidden Bowling Alley`,
-    combat: new CombatStrategy()
-      .killHard($monster`ancient protector spirit (The Hidden Bowling Alley)`)
-      .killItem($monster`pygmy bowler`)
-      .macro(() => {
-        if (myFamiliar() === $familiar`Melodramedary` && get("camelSpit") === 100)
-          return Macro.trySkill($skill`%fn, spit on them!`).tryItem($item`cosmic bowling ball`);
-        return Macro.tryItem($item`Spooky VHS Tape`).trySkill(
-          $skill`Emit Matter Duplicating Drones`
-        );
-      }, $monster`pygmy bowler`)
-      .banish($monster`pygmy janitor`)
-      .banish($monster`pygmy orderlies`),
-    outfit: () => {
-      const result: OutfitSpec = {
-        equip: $items`nurse's hat`,
-        modifier: "item",
-        avoid: $items`broken champagne bottle`,
-      };
-      if (have($familiar`Melodramedary`) && get("camelSpit") === 100) {
-        result.familiar = $familiar`Melodramedary`;
-      } else if (have($familiar`Grey Goose`) && familiarWeight($familiar`Grey Goose`) >= 6) {
-        result.familiar = $familiar`Grey Goose`;
-      }
-
-      if (bowlingBallsGathered() && !get("candyCaneSwordBowlingAlley", false)) {
-        result.equip?.push($item`candy cane sword cane`);
-      }
-      return result;
-    },
-    ignore_banishes: () => bowlingBallsGathered(),
-    map_the_monster: () => {
-      if (
-        itemAmount($item`bowling ball`) === 0 &&
-        have($familiar`Melodramedary`) &&
-        get("camelSpit") === 100 &&
-        cosmicBowlingBallReady()
-      )
-        return $monster`pygmy bowler`;
-      return $monster`none`;
-    },
+    combat: new CombatStrategy().killHard(
+      $monster`ancient protector spirit (The Hidden Bowling Alley)`
+    ),
     choices: { 788: 1 },
-    limit: { soft: 25 },
+    limit: { tries: 5 },
   },
   {
     name: "Finish Bowling",
@@ -488,44 +372,14 @@ const Bowling: Task[] = [
   },
 ];
 
-function bowlingBallsGathered(): boolean {
-  let balls = 0;
-  balls += itemAmount($item`bowling ball`);
-  balls += closetAmount($item`bowling ball`);
-  if (get("spookyVHSTapeMonster") === $monster`pygmy bowler`) balls += 1;
-  if (have($item`candy cane sword cane`) && !get("candyCaneSwordBowlingAlley", false)) balls += 1;
-
-  const timesBowled = get("hiddenBowlingAlleyProgress") - 1;
-  return timesBowled + balls >= 5;
-}
-
 export const HiddenQuest: Quest = {
   name: "Hidden City",
   tasks: [
     ...Temple,
-    {
-      name: "Get Machete",
-      after: ["Open City"],
-      completed: () => have($item`antique machete`),
-      do: $location`The Hidden Park`,
-      outfit: { modifier: "-combat" },
-      choices: { 789: 2 },
-      limit: { soft: 10 },
-    },
     ...Office,
     ...Apartment,
     ...Hospital,
     ...Bowling,
-    {
-      name: "Banish Janitors",
-      after: ["Open City"],
-      completed: () =>
-        get("relocatePygmyJanitor") === myAscensions() || have($skill`Emotionally Chipped`),
-      do: $location`The Hidden Park`,
-      outfit: { modifier: "-combat" },
-      choices: { 789: 2 },
-      limit: { soft: 15 },
-    },
     {
       name: "Boss",
       after: ["Finish Office", "Finish Apartment", "Finish Hospital", "Finish Bowling"],

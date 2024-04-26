@@ -19,6 +19,7 @@ export type Task = {
   freeaction?: boolean | (() => boolean);
   freecombat?: boolean;
   limit: Limit;
+  noadventures?: boolean;
   expectbeatenup?: boolean | (() => boolean);
 
   // The monsters to search for with orb.

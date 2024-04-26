@@ -169,26 +169,6 @@ const Oil: Task[] = [
     limit: { tries: 1 },
     orbtargets: () => undefined,
   },
-  {
-    name: "Oil Jar", // get oil for jar of oil
-    after: ["Oil Peak"],
-    completed: () =>
-      itemAmount($item`bubblin' crude`) >= 12 ||
-      have($item`jar of oil`) ||
-      !!(get("twinPeakProgress") & 4),
-    do: $location`Oil Peak`,
-    outfit: () => {
-      if (have($item`unbreakable umbrella`))
-        return {
-          modifier: "ML 80 max, 0.1 item, monster level percent",
-          equip: $items`unbreakable umbrella`,
-        };
-      else return { modifier: "ML, 0.1 item" };
-    },
-    combat: new CombatStrategy().killItem(),
-    limit: { soft: 5 },
-    orbtargets: () => undefined,
-  },
 ];
 
 const Twin: Task[] = [
@@ -205,6 +185,7 @@ const Twin: Task[] = [
     },
     do: $location`Twin Peak`,
     choices: { 606: 1, 607: 1 },
+    acquire: [{ item: $item`rusty hedge trimmers` }],
     outfit: () => stenchPlanner.outfitFor(4, { modifier: "-combat, item" }),
     combat: new CombatStrategy().killItem(
       $monsters`bearpig topiary animal, elephant (meatcar?) topiary animal, spider (duck?) topiary animal`
@@ -225,6 +206,7 @@ const Twin: Task[] = [
       use($item`rusty hedge trimmers`);
     },
     choices: { 606: 1, 607: 1 },
+    acquire: [{ item: $item`rusty hedge trimmers` }],
     outfit: () => stenchPlanner.outfitFor(4),
     limit: { tries: 1 },
   },
@@ -239,6 +221,7 @@ const Twin: Task[] = [
     combat: new CombatStrategy().killItem(
       $monsters`bearpig topiary animal, elephant (meatcar?) topiary animal, spider (duck?) topiary animal`
     ),
+    acquire: [{ item: $item`rusty hedge trimmers` }],
     limit: { soft: 10 },
   },
   {
@@ -251,6 +234,7 @@ const Twin: Task[] = [
     },
     choices: { 606: 2, 608: 1 },
     outfit: { modifier: "item 50min" },
+    acquire: [{ item: $item`rusty hedge trimmers` }],
     limit: { tries: 1 },
   },
   {
@@ -264,7 +248,7 @@ const Twin: Task[] = [
     combat: new CombatStrategy().killItem(
       $monsters`bearpig topiary animal, elephant (meatcar?) topiary animal, spider (duck?) topiary animal`
     ),
-    acquire: [{ item: $item`jar of oil` }],
+    acquire: [{ item: $item`jar of oil` }, { item: $item`rusty hedge trimmers` }],
     limit: { soft: 10 },
   },
   {

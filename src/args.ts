@@ -108,6 +108,27 @@ export const args = Args.create(
       tune: Args.string({
         help: "Use your hewn moon-rune spoon to retune to this sign after dieting.",
       }),
+      stomach: Args.number({
+        help: "Amount of stomach to fill.",
+        default: 5,
+      }),
+      liver: Args.number({
+        help: "Amount of liver to fill.",
+        default: 10,
+      }),
+      spleen: Args.number({
+        help: "Amount of spleen to fill.",
+        default: 5,
+      }),
+      voa: Args.number({
+        help: "Value of an adventure, in meat, for determining diet.",
+        setting: "valueOfAdventure",
+        default: 6500,
+      }),
+      levelto: Args.number({
+        help: "Aim to level to this with free leveling resources.",
+        default: 13,
+      }),
     }),
     debug: Args.group("Debug Options", {
       actions: Args.number({

@@ -16,7 +16,7 @@ import { Quest } from "../engine/task";
 import { Outfit, step } from "grimoire-kolmafia";
 import { Priorities } from "../engine/priority";
 import { CombatStrategy } from "../engine/combat";
-import { atLevel } from "../lib";
+import { atLevel, buyStrategy } from "../lib";
 import { councilSafe } from "./level12";
 import { stenchPlanner } from "../engine/outfit";
 
@@ -31,6 +31,16 @@ export const BatQuest: Quest = {
       do: () => visitUrl("council.php"),
       limit: { tries: 1 },
       priority: () => (councilSafe() ? Priorities.Free : Priorities.BadMood),
+      freeaction: true,
+    },
+    {
+      name: "Use Sonar If Cheap",
+      after: ["Start"],
+      ready: () => buyStrategy($item`sonar-in-a-biscuit`, 3, 9),
+      acquire: [{ item: $item`sonar-in-a-biscuit` }],
+      completed: () => step("questL04Bat") >= 3,
+      do: () => use($item`sonar-in-a-biscuit`),
+      limit: { tries: 3 },
       freeaction: true,
     },
     {
@@ -80,8 +90,8 @@ export const BatQuest: Quest = {
       completed: () => step("questL04Bat") + itemAmount($item`sonar-in-a-biscuit`) >= 2,
       priority: () =>
         step("questL11Shen") === 999 ||
-        have($item`The Stankara Stone`) ||
-        (myDaycount() === 1 && step("questL11Shen") > 1)
+          have($item`The Stankara Stone`) ||
+          (myDaycount() === 1 && step("questL11Shen") > 1)
           ? Priorities.None
           : Priorities.BadMood,
       prepare: () => {

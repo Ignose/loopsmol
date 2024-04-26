@@ -1,9 +1,13 @@
 import {
+  availableAmount,
   cliExecute,
+  create,
   effectModifier,
   equippedAmount,
   haveEquipped,
+  Item,
   itemAmount,
+  mallPrice,
   myBasestat,
   myHp,
   myMaxhp,
@@ -26,6 +30,7 @@ import {
   $skill,
   $stat,
   AutumnAton,
+  clamp,
   ensureEffect,
   get,
   have,
@@ -37,13 +42,48 @@ import { Priority, Quest, Task } from "../engine/task";
 import { Guards, OutfitSpec, step } from "grimoire-kolmafia";
 import { Priorities } from "../engine/priority";
 import { CombatStrategy } from "../engine/combat";
-import { atLevel, debug } from "../lib";
-import { forceItemPossible, yellowRayPossible } from "../engine/resources";
+import { atLevel, buyStrategy, debug } from "../lib";
+import { yellowRayPossible } from "../engine/resources";
 import { args } from "../args";
 import { customRestoreMp, fillHp } from "../engine/moods";
 
 export function flyersDone(): boolean {
   return get("flyeredML") >= 10000;
+}
+
+function ensureFluffers(flufferCount: number): void {
+  // From bean-casual
+  while (availableAmount($item`stuffing fluffer`) < flufferCount) {
+    if (itemAmount($item`cashew`) >= 3) {
+      create(1, $item`stuffing fluffer`);
+      continue;
+    }
+    const neededFluffers = flufferCount - availableAmount($item`stuffing fluffer`);
+    const stuffingFlufferSources: [Item, number][] = [
+      [$item`cashew`, 3],
+      [$item`stuffing fluffer`, 1],
+      [$item`cornucopia`, (1 / 3.5) * 3],
+    ];
+    stuffingFlufferSources.sort(
+      ([item1, mult1], [item2, mult2]) => mallPrice(item1) * mult1 - mallPrice(item2) * mult2
+    );
+    const [stuffingFlufferSource, sourceMultiplier] = stuffingFlufferSources[0];
+
+    const neededOfSource = Math.ceil(neededFluffers * sourceMultiplier);
+    cliExecute(`acquire ${neededOfSource} ${stuffingFlufferSource}`);
+    if (itemAmount(stuffingFlufferSource) < neededOfSource) {
+      throw `Unable to acquire ${stuffingFlufferSource}; maybe raising your pricing limit will help?`;
+    }
+    if (stuffingFlufferSource === $item`cornucopia`) {
+      use(neededOfSource, $item`cornucopia`);
+    }
+    if (stuffingFlufferSource !== $item`stuffing fluffer`) {
+      create(
+        clamp(Math.floor(availableAmount($item`cashew`) / 3), 0, neededFluffers),
+        $item`stuffing fluffer`
+      );
+    }
+  }
 }
 
 const Flyers: Task[] = [
@@ -568,66 +608,8 @@ export const WarQuest: Quest = {
       freeaction: true,
     },
     {
-      name: "Outfit Hippy",
-      after: ["Misc/Unlock Island"],
-      ready: () =>
-        get("skillLevel144") === 0 ||
-        atLevel(12) ||
-        get("_universeCalculated") >= get("skillLevel144"),
-      completed: () =>
-        (have($item`filthy corduroys`) && have($item`filthy knitted dread sack`)) ||
-        (have($item`beer helmet`) &&
-          have($item`distressed denim pants`) &&
-          have($item`bejeweled pledge pin`)),
-      do: $location`Hippy Camp`,
-      limit: { soft: 10 },
-      choices: () => {
-        return {
-          136: have($item`filthy corduroys`) ? 2 : 1,
-          137: have($item`filthy corduroys`) ? 1 : 2,
-        };
-      },
-      outfit: () => {
-        if (forceItemPossible())
-          return {
-            modifier: "+combat",
-            familiar: args.minor.jellies ? $familiar`Space Jellyfish` : undefined,
-          };
-        else
-          return {
-            modifier: "item",
-            // use goose for item instead of jellyfish
-          };
-      },
-      combat: new CombatStrategy().forceItems().macro(Macro.trySkill($skill`Extract Jelly`)),
-    },
-    {
-      name: "Outfit Frat",
-      after: ["Start", "Outfit Hippy"],
-      completed: () =>
-        have($item`beer helmet`) &&
-        have($item`distressed denim pants`) &&
-        have($item`bejeweled pledge pin`),
-      do: $location`Frat House`,
-      limit: { soft: 10 },
-      choices: { 142: 3, 143: 3, 144: 3, 145: 1, 146: 3, 1433: 3 },
-      outfit: () => {
-        if (forceItemPossible())
-          return {
-            equip: $items`filthy corduroys, filthy knitted dread sack`,
-            modifier: "+combat",
-          };
-        else
-          return {
-            equip: $items`filthy corduroys, filthy knitted dread sack`,
-            modifier: "item",
-          };
-      },
-      combat: new CombatStrategy().forceItems(),
-    },
-    {
       name: "Enrage",
-      after: ["Start", "Misc/Unlock Island", "Misc/Unlock Island Submarine", "Outfit Frat"],
+      after: ["Start", "Misc/Unlock Island", "Misc/Unlock Island Submarine"],
       ready: () => myBasestat($stat`mysticality`) >= 70,
       completed: () => step("questL12War") >= 1,
       prepare: () => {
@@ -655,6 +637,25 @@ export const WarQuest: Quest = {
         else return { 139: 3, 140: 3, 141: 3, 142: 3, 143: 3, 144: 3, 145: 1, 146: 3, 1433: 3 };
       },
       limit: { soft: 20 },
+    },
+    {
+      name: "Fluffers",
+      after: ["Enrage"],
+      ready: () => buyStrategy($item`cashew`, 3, 2),
+      completed: () =>
+        get("hippiesDefeated") >= 1000 || get("fratboysDefeated") >= 1000,
+      outfit: {
+        equip: $items`beer helmet, distressed denim pants, bejeweled pledge pin`,
+      },
+      do: (): void => {
+        // const count = clamp((1000 - get("hippiesDefeated")) / 46, 0, 24);
+        while (get("hippiesDefeated") < 1000) {
+          ensureFluffers(1);
+          use($item`stuffing fluffer`);
+        }
+      },
+      limit: { tries: 1 },
+      freeaction: true,
     },
     ...Flyers,
     ...Lighthouse,

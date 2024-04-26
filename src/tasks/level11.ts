@@ -6,6 +6,7 @@ import {
   itemAmount,
   myMaxmp,
   myMeat,
+  retrieveItem,
   runChoice,
   use,
   visitUrl,
@@ -32,7 +33,7 @@ import { Quest, Task } from "../engine/task";
 import { OutfitSpec, step } from "grimoire-kolmafia";
 import { Priorities } from "../engine/priority";
 import { CombatStrategy } from "../engine/combat";
-import { atLevel, debug, haveLoathingIdolMicrophone } from "../lib";
+import { atLevel, buyStrategy, debug, haveLoathingIdolMicrophone } from "../lib";
 import { councilSafe } from "./level12";
 import { customRestoreMp } from "../engine/moods";
 import { tryPlayApriling } from "../engine/resources";
@@ -41,6 +42,7 @@ const Diary: Task[] = [
   {
     name: "Forest",
     after: ["Start"],
+    acquire: [{ item: $item`blackberry galoshes` }],
     prepare: () => {
       tryPlayApriling("+combat");
     },
@@ -162,6 +164,9 @@ const Desert: Task[] = [
   {
     name: "Oasis Drum",
     after: ["Compass"],
+    acquire: [
+      { item: $item`drum machine`, useful: () => have($item`worm-riding hooks`) },
+    ],
     ready: () => have($item`worm-riding hooks`) || itemAmount($item`worm-riding manual page`) >= 15,
     priority: () => (have($effect`Ultrahydrated`) ? Priorities.MinorEffect : Priorities.None),
     completed: () =>
@@ -193,7 +198,7 @@ const Desert: Task[] = [
   {
     name: "Milestone",
     after: ["Misc/Unlock Beach", "Diary"],
-    ready: () => have($item`milestone`),
+    ready: () => have($item`milestone`) && buyStrategy($item`milestone`, 1, 2),
     completed: () => !have($item`milestone`) || get("desertExploration") >= 100,
     do: () => use($item`milestone`, availableAmount($item`milestone`)),
     limit: { tries: 5 }, // 5 to account for max of starting, poke garden & pull
@@ -202,7 +207,11 @@ const Desert: Task[] = [
   {
     name: "Desert",
     after: ["Diary", "Compass"],
-    acquire: [{ item: $item`can of black paint`, useful: () => (get("gnasirProgress") & 2) === 0 }],
+    acquire: [
+      { item: $item`can of black paint`, useful: () => (get("gnasirProgress") & 2) === 0 },
+      { item: $item`killing jar`, useful: () => (get("gnasirProgress") & 4) === 0 },
+      { item: $item`drum machine`, useful: () => (get("gnasirProgress") & 16) === 0 },
+    ],
     ready: () => {
       const cond =
         (have($item`can of black paint`) ||
@@ -290,6 +299,14 @@ function rotatePyramid(goal: number): void {
   visitUrl("choice.php?whichchoice=929&option=5&pwd");
 }
 
+function numRatchetToBuy(): number {
+  const token = have($item`ancient bronze token`) || have($item`ancient bomb`) || get("pyramidBombUsed") ? 0 : 3;
+  const bomb = have($item`ancient bomb`) || get("pyramidBombUsed") ? 0 : 4;
+  const use = get("pyramidBombUsed") ? 0 : 3;
+
+  return token + bomb + use - (itemAmount($item`tomb ratchet`) + itemAmount($item`crumbling wooden wheel`))
+}
+
 const Pyramid: Task[] = [
   {
     name: "Open Pyramid",
@@ -356,11 +373,13 @@ const Pyramid: Task[] = [
       }
     },
     completed: () => {
+      if (numRatchetToBuy() === 0) return true;
       if (!get("controlRoomUnlock")) return false;
       if (get("pyramidBombUsed")) return true;
-      const ratchets = itemAmount($item`tomb ratchet`) + itemAmount($item`crumbling wooden wheel`);
-      const needed = have($item`ancient bomb`) ? 3 : have($item`ancient bronze token`) ? 7 : 10;
-      return ratchets >= needed;
+      if (buyStrategy($item`tomb ratchet`, numRatchetToBuy(), numRatchetToBuy() * 1.5)) {
+        retrieveItem($item`tomb ratchet`, numRatchetToBuy())
+        return true;
+      } else return false;
     },
     do: $location`The Middle Chamber`,
     limit: { soft: 30 },
@@ -370,6 +389,7 @@ const Pyramid: Task[] = [
   {
     name: "Get Token",
     after: ["Middle Chamber Delay"],
+    acquire: [{ item: $item`tomb ratchet`, num: numRatchetToBuy() }],
     completed: () =>
       have($item`ancient bronze token`) || have($item`ancient bomb`) || get("pyramidBombUsed"),
     do: () => rotatePyramid(4),

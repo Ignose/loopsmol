@@ -6,19 +6,18 @@ import {
   $items,
   $location,
   $monster,
-  $monsters,
   $skill,
   get,
   have,
   Macro,
 } from "libram";
-import { CombatStrategy, killMacro } from "../engine/combat";
+import { CombatStrategy } from "../engine/combat";
 import { atLevel } from "../lib";
 import { Quest } from "../engine/task";
 import { step } from "grimoire-kolmafia";
 import { Priorities } from "../engine/priority";
 import { councilSafe } from "./level12";
-import { forceItemPossible, tryForceNC, tryPlayApriling } from "../engine/resources";
+import { tryForceNC, tryPlayApriling } from "../engine/resources";
 
 export const GiantQuest: Quest = {
   name: "Giant",
@@ -34,32 +33,9 @@ export const GiantQuest: Quest = {
       freeaction: true,
     },
     {
-      name: "Get Bean",
-      after: ["Bat/Use Sonar 2"],
-      completed: () => have($item`enchanted bean`) || step("questL10Garbage") >= 1,
-      do: $location`The Beanbat Chamber`,
-      outfit: {
-        modifier: "item",
-        equip: $items`miniature crystal ball`,
-        avoid: $items`broken champagne bottle`,
-      },
-      map_the_monster: () => {
-        if (
-          have($familiar`Patriotic Eagle`) &&
-          have($skill`Gallapagosian Mating Call`) &&
-          have($skill`Map the Monsters`)
-        )
-          return $monster`none`; // Save for GROPS
-        return $monster`beanbat`;
-      },
-      combat: new CombatStrategy()
-        .banish($monsters`magical fruit bat, musical fruit bat`)
-        .killItem($monster`beanbat`),
-      limit: { soft: 10 },
-    },
-    {
       name: "Grow Beanstalk",
-      after: ["Start", "Get Bean"],
+      after: ["Start"],
+      acquire: [{ item: $item`enchanted bean` }],
       completed: () => step("questL10Garbage") >= 1,
       do: () => use($item`enchanted bean`),
       outfit: { equip: $items`spring shoes` },
@@ -67,51 +43,8 @@ export const GiantQuest: Quest = {
       freeaction: true,
     },
     {
-      name: "Airship YR Healer",
-      after: ["Grow Beanstalk"],
-      prepare: () => tryPlayApriling("-combat"),
-      completed: () => have($item`amulet of extreme plot significance`),
-      do: $location`The Penultimate Fantasy Airship`,
-      choices: () => {
-        return { 178: 2, 182: have($item`model airship`) ? 1 : 4 };
-      },
-      post: () => {
-        if (have($effect`Temporary Amnesia`)) cliExecute("uneffect Temporary Amnesia");
-      },
-      orbtargets: () => {
-        if (have($item`Fourth of May Cosplay Saber`)) {
-          if (have($item`Mohawk wig`)) return $monsters`Quiet Healer`;
-          else return $monsters`Quiet Healer, Burly Sidekick`;
-        } else {
-          return undefined; // Avoid orb dancing if we are using a real YR
-        }
-      },
-      limit: { soft: 50 },
-      delay: () =>
-        have($item`Plastic Wrap Immateria`) ? 25 : have($item`Gauze Immateria`) ? 20 : 15, // After that, just look for noncombats
-      outfit: () => {
-        if (forceItemPossible()) return { modifier: "-combat" };
-        else
-          return {
-            modifier: "-combat, item",
-            avoid: $items`broken champagne bottle`,
-          };
-      },
-      combat: new CombatStrategy()
-        .macro(
-          () =>
-            have($item`Mohawk wig`) ||
-              !have($skill`Emotionally Chipped`) ||
-              get("_feelEnvyUsed") >= 3
-              ? new Macro()
-              : Macro.skill($skill`Feel Envy`).step(killMacro()),
-          $monster`Burly Sidekick`
-        )
-        .forceItems($monster`Quiet Healer`),
-    },
-    {
       name: "Airship",
-      after: ["Airship YR Healer"],
+      after: ["Grow Beanstalk"],
       completed: () => have($item`S.O.C.K.`),
       do: $location`The Penultimate Fantasy Airship`,
       choices: () => {
@@ -125,13 +58,6 @@ export const GiantQuest: Quest = {
       limit: { soft: 50 },
       delay: () =>
         have($item`Plastic Wrap Immateria`) ? 25 : have($item`Gauze Immateria`) ? 20 : 15, // After that, just look for noncombats
-      combat: new CombatStrategy().macro(
-        () =>
-          have($item`Mohawk wig`) || !have($skill`Emotionally Chipped`) || get("_feelEnvyUsed") >= 3
-            ? new Macro()
-            : Macro.skill($skill`Feel Envy`).step(killMacro()),
-        $monster`Burly Sidekick`
-      ),
     },
     {
       name: "Basement Search",
@@ -162,6 +88,7 @@ export const GiantQuest: Quest = {
     {
       name: "Basement Finish",
       after: ["Basement Search"],
+      acquire: [{ item: $item`amulet of extreme plot significance` }],
       completed: () => step("questL10Garbage") >= 8,
       do: $location`The Castle in the Clouds in the Sky (Basement)`,
       outfit: { equip: $items`amulet of extreme plot significance` },
@@ -200,6 +127,7 @@ export const GiantQuest: Quest = {
     {
       name: "Top Floor",
       after: ["Ground"],
+      acquire: [{ item: $item`Mohawk wig` }],
       prepare: () => tryPlayApriling("-combat"),
       completed: () => step("questL10Garbage") >= 10,
       do: $location`The Castle in the Clouds in the Sky (Top Floor)`,

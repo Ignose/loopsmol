@@ -15,7 +15,6 @@ import { MacguffinQuest } from "./level11";
 import { WarQuest } from "./level12";
 import { TowerQuest } from "./level13";
 import { MiscQuest, WandQuest } from "./misc";
-import { PullQuest } from "./pulls";
 import { DigitalQuest, KeysQuest } from "./keys";
 import { SummonQuest } from "./summons";
 import { DietQuest } from "./diet";
@@ -28,7 +27,6 @@ export function all_tasks(): Task[] {
     TootQuest,
     MiscQuest,
     DietQuest,
-    PullQuest,
     WandQuest,
     KeysQuest,
     SummonQuest,
