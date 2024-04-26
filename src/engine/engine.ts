@@ -803,7 +803,7 @@ export class Engine extends BaseEngine<CombatActions, ActiveTask> {
       autoAbortThreshold: "-0.05",
       recoveryScript: "",
       removeMalignantEffects: false,
-      choiceAdventureScript: "loopsmol_choice.ash",
+      choiceAdventureScript: "smoliscasual_choice.ash",
       mpAutoRecoveryItems: ensureRecovery(
         "mpAutoRecoveryItems",
         ["black cherry soda", "doc galaktik's invigorating tonic"],
