@@ -119,7 +119,7 @@ export function main(command?: string): void {
 }
 
 function runComplete(): boolean {
-  return step("questL13Final") > 11 || myPath() !== $path`A Shrunken Adventurer am I`;
+  return step("questL13Final") > 11;
 }
 
 function printVersionInfo(): void {

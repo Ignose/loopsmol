@@ -20,7 +20,6 @@ import { SummonQuest } from "./summons";
 import { DietQuest } from "./diet";
 import { Task } from "../engine/task";
 import { getTasks } from "grimoire-kolmafia";
-import { args } from "../args";
 import { LevelingQuest } from "./leveling";
 
 export function all_tasks(): Task[] {
@@ -51,11 +50,5 @@ export function all_tasks(): Task[] {
     DigitalQuest,
   ];
 
-  const tasks = getTasks(quests);
-  for (const task of tasks) {
-    if (task.limit.soft) {
-      task.limit.soft *= args.minor.luck;
-    }
-  }
-  return tasks;
+  return getTasks(quests);
 }
