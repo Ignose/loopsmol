@@ -6,7 +6,6 @@ import {
   itemAmount,
   myMaxmp,
   myMeat,
-  retrieveItem,
   runChoice,
   use,
   visitUrl,
@@ -365,30 +364,8 @@ const Pyramid: Task[] = [
     delay: 9,
   },
   {
-    name: "Middle Chamber Delay",
-    after: ["Upper Chamber", "Middle Chamber"],
-    prepare: () => {
-      if (haveLoathingIdolMicrophone()) {
-        ensureEffect($effect`Spitting Rhymes`);
-      }
-    },
-    completed: () => {
-      if (numRatchetToBuy() === 0) return true;
-      if (!get("controlRoomUnlock")) return false;
-      if (get("pyramidBombUsed")) return true;
-      if (buyStrategy($item`tomb ratchet`, numRatchetToBuy(), numRatchetToBuy() * 1.5)) {
-        retrieveItem($item`tomb ratchet`, numRatchetToBuy())
-        return true;
-      } else return false;
-    },
-    do: $location`The Middle Chamber`,
-    limit: { soft: 30 },
-    combat: new CombatStrategy().ignore(),
-    delay: 9,
-  },
-  {
     name: "Get Token",
-    after: ["Middle Chamber Delay"],
+    after: ["Middle Chamber"],
     acquire: [{ item: $item`tomb ratchet`, num: numRatchetToBuy() }],
     completed: () =>
       have($item`ancient bronze token`) || have($item`ancient bomb`) || get("pyramidBombUsed"),

@@ -33,6 +33,7 @@ import {
   print,
   retrieveItem,
   runChoice,
+  toInt,
   totalFreeRests,
   use,
   useSkill,
@@ -889,6 +890,7 @@ export const MiscQuest: Quest = {
     {
       name: "2002 Store",
       after: [],
+      prepare: () => visitUrl(`inv_use.php?whichitem=${toInt($item`2002 Mr. Store Catalog`)}&which=f0&pwd`),
       priority: () => Priorities.Free,
       completed: () =>
         !have($item`2002 Mr. Store Catalog`) ||

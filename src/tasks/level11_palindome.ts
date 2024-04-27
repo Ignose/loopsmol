@@ -498,6 +498,7 @@ const Dome: Task[] = [
   {
     name: "Grove",
     after: ["Alarm Gem"],
+    acquire: [{ item: $item`wet stunt nut stew` }],
     completed: () =>
       (have($item`bird rib`) && have($item`lion oil`)) ||
       have($item`wet stew`) ||
@@ -510,7 +511,7 @@ const Dome: Task[] = [
   },
   {
     name: "Open Alarm",
-    after: ["Alarm Gem", "Grove"],
+    after: ["Alarm Gem"],
     completed: () => step("questL11Palindome") >= 5,
     do: () => {
       if (!have($item`wet stunt nut stew`)) retrieveItem($item`wet stunt nut stew`);

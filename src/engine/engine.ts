@@ -23,7 +23,6 @@ import {
   myMaxmp,
   myMeat,
   myMp,
-  myPath,
   myTurncount,
   numericModifier,
   print,
@@ -46,7 +45,6 @@ import {
   $location,
   $locations,
   $monster,
-  $path,
   $skill,
   $slot,
   get,
@@ -164,7 +162,6 @@ export class Engine extends BaseEngine<CombatActions, ActiveTask> {
     this.updatePlan();
     const available_tasks = this.tasks.filter((task) => this.available(task));
 
-    if (myPath() !== $path`A Shrunken Adventurer am I`) return undefined; // Prism broken
 
     // Teleportitis overrides all
     if (have($effect`Teleportitis`)) {
@@ -842,7 +839,6 @@ export class Engine extends BaseEngine<CombatActions, ActiveTask> {
 }
 
 function autosellJunk(): void {
-  if (myPath() !== $path`A Shrunken Adventurer am I`) return; // final safety
   if (myMeat() >= 10000) return;
   if (myTurncount() >= 1000) return; // stop after breaking ronin
   if (have($item`pork elf goodies sack`)) use($item`pork elf goodies sack`);
