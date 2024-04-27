@@ -5,7 +5,6 @@ import {
   isOnline,
   itemAmount,
   Monster,
-  myMeat,
   reverseNumberology,
   runCombat,
   use,
@@ -13,7 +12,6 @@ import {
   wait,
 } from "kolmafia";
 import {
-  $effect,
   $familiar,
   $item,
   $items,
@@ -29,10 +27,8 @@ import { debug, underStandard } from "../lib";
 import { args } from "../args";
 import { Quest, Task } from "../engine/task";
 import { step } from "grimoire-kolmafia";
-import { yellowRayPossible } from "../engine/resources";
 import { Priorities } from "../engine/priority";
 import { fillHp } from "../engine/moods";
-import { oresNeeded } from "./level8";
 
 type SummonTarget = Omit<Task, "do" | "name" | "limit"> & {
   target: Monster;
@@ -52,41 +48,6 @@ const summonTargets: SummonTarget[] = [
       modes: { retrocape: ["heck", "hold"] },
     },
     combat: new CombatStrategy().yellowRay(),
-  },
-  {
-    target: $monster`mountain man`,
-    after: [],
-    ready: () =>
-      myMeat() >= 1000 &&
-      // YR the War frat first
-      have($item`beer helmet`) &&
-      have($item`distressed denim pants`) &&
-      have($item`bejeweled pledge pin`),
-    completed: () => oresNeeded() === 0,
-    priority: () => (have($effect`Everything Looks Yellow`) ? Priorities.BadYR : Priorities.None),
-    outfit: () => {
-      if (yellowRayPossible())
-        return {
-          equip: $items`unwrapped knock-off retro superhero cape`,
-          modes: { retrocape: ["heck", "hold"] },
-        };
-      else
-        return {
-          equip: $items`unwrapped knock-off retro superhero cape`,
-          modes: { retrocape: ["heck", "hold"] },
-          modifier: "item",
-        };
-    },
-    combat: new CombatStrategy().yellowRay().macro(() => {
-      const result = new Macro();
-      if (have($effect`Everything Looks Yellow`)) {
-        if (!have($item`Spooky VHS Tape`)) result.trySkill($skill`Feel Envy`);
-        if (!have($skill`Feel Envy`) || get("_feelEnvyUsed"))
-          result.tryItem($item`Spooky VHS Tape`);
-      }
-      return result;
-    }),
-    tries: 3,
   },
   {
     target: $monster`Astrologer of Shub-Jigguwatt`,
@@ -202,9 +163,9 @@ const summonSources: SummonSource[] = [
     name: "Fax",
     available: () =>
       args.minor.fax &&
-      !underStandard() &&
-      !get("_photocopyUsed") &&
-      have($item`Clan VIP Lounge key`)
+        !underStandard() &&
+        !get("_photocopyUsed") &&
+        have($item`Clan VIP Lounge key`)
         ? 1
         : 0,
     canFight: (mon: Monster) => canFaxbot(mon),
@@ -218,8 +179,7 @@ const summonSources: SummonSource[] = [
         if (checkFax(mon)) break;
       }
       if (!checkFax(mon))
-        throw `Failed to acquire photocopied ${mon.name}.${
-          !isOnline(faxbot) ? `Faxbot ${faxbot} appears to be offline.` : ""
+        throw `Failed to acquire photocopied ${mon.name}.${!isOnline(faxbot) ? `Faxbot ${faxbot} appears to be offline.` : ""
         }`;
       use($item`photocopied monster`);
     },

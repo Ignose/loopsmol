@@ -1,14 +1,12 @@
-import { Item, itemAmount, numericModifier, visitUrl } from "kolmafia";
+import { numericModifier, visitUrl } from "kolmafia";
 import {
   $effect,
   $familiar,
   $item,
   $location,
-  $monster,
   $skill,
   ensureEffect,
   get,
-  have,
   Macro,
 } from "libram";
 import { Quest } from "../engine/task";
@@ -18,7 +16,6 @@ import { CombatStrategy } from "../engine/combat";
 import { atLevel } from "../lib";
 import { councilSafe } from "./level12";
 import { coldPlanner } from "../engine/outfit";
-import { trainSetAvailable } from "./misc";
 
 export const McLargeHugeQuest: Quest = {
   name: "McLargeHuge",
@@ -61,7 +58,7 @@ export const McLargeHugeQuest: Quest = {
     },
     {
       name: "Climb",
-      after: ["Trapper Return", "Palindome/Cold Snake"],
+      after: ["Palindome/Cold Snake"],
       acquire: [
         { item: $item`ninja rope` },
         { item: $item`ninja carabiner` },
@@ -104,32 +101,3 @@ export const McLargeHugeQuest: Quest = {
     },
   ],
 };
-
-// Get the number of ores needed from non-trainset places
-export function oresNeeded(): number {
-  if (step("questL08Trapper") >= 2) return 0;
-  if (trainSetAvailable()) return 0;
-  let ore_needed = 3;
-  ore_needed -= Math.min(
-    itemAmount($item`asbestos ore`),
-    itemAmount($item`chrome ore`),
-    itemAmount($item`linoleum ore`)
-  );
-  if (have($item`Deck of Every Card`) && get("_deckCardsDrawn") === 0) ore_needed--;
-  const pulled = new Set<Item>(
-    get("_roninStoragePulls")
-      .split(",")
-      .map((id) => parseInt(id))
-      .filter((id) => id > 0)
-      .map((id) => Item.get(id))
-  );
-  if (
-    !pulled.has($item`asbestos ore`) &&
-    !pulled.has($item`chrome ore`) &&
-    !pulled.has($item`linoleum ore`)
-  )
-    ore_needed--;
-
-  if (get("spookyVHSTapeMonster") === $monster`mountain man`) ore_needed -= 2;
-  return Math.max(ore_needed, 0);
-}

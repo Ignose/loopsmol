@@ -74,7 +74,7 @@ const Temple: Task[] = [
   },
   {
     name: "Open Temple",
-    after: ["Forest Coin", "Forest Map", "Forest Sapling", "Forest Fertilizer"],
+    after: ["Forest Coin", "Forest Map", "Forest Sapling"],
     acquire: [{ item: $item`Spooky-Gro fertilizer` }],
     completed: () => step("questM16Temple") === 999,
     do: () => use($item`Spooky Temple map`),
@@ -83,7 +83,7 @@ const Temple: Task[] = [
   },
   {
     name: "Temple Nostril",
-    after: ["Open Temple", "Temple Wool"],
+    after: ["Open Temple"],
     acquire: [{ item: $item`stone wool` }],
     completed: () => have($item`the Nostril of the Serpent`) || step("questL11Worship") >= 3,
     do: $location`The Hidden Temple`,

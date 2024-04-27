@@ -9,18 +9,34 @@ export const routing: string[] = [
   "Diet/Hourglass",
 
   // Pickup items
-  "Misc/Short Cook",
   "Misc/Floundry",
   "Misc/Voting",
   "Misc/Acquire Kgnee",
-  "Misc/Acquire FamEquip",
 
   // Break pvp stone ASAP
   "Misc/Break Stone",
-  "Pull/All",
 
   // Start with the basic leveling tasks
   "Toot/Finish",
+  "Leveling/Cloud Talk",
+  "Leveling/Daycare",
+  "Leveling/Bastille",
+  "Leveling/Leaflet",
+  "Leveling/Snojo",
+  "Leveling/Chateau",
+
+  // Then do the scaling leveling
+  "Leveling/LOV Tunnel",
+  "Leveling/Witchess",
+  "Leveling/God Lobster",
+  "Leveling/Machine Elf",
+  "Leveling/Neverending Party",
+  "Diet/Consume",
+  "Misc/Protonic Ghost", // whenever ghosts are ready
+
+  // Open up MacGuffin zones
+  "Macguffin/Diary",
+  "Macguffin/Desert", // charge camel, use voters
 
   // Get basic gear
   "Misc/Workshed",
@@ -28,28 +44,19 @@ export const routing: string[] = [
   "Misc/Acquire Birch Battery",
   "Keys/Deck",
 
-  // Level up
-  "Misc/Cloud Talk",
-  "Summon/War Frat 151st Infantryman", // Summon before leaving level 1
-  "Misc/LOV Tunnel",
-  "Misc/Daycare",
-  "Misc/Bastille",
-  "Misc/Snojo",
-
-  // Eat as soon as possible
-  "Diet/Eat",
-  "Diet/Drink",
-  "Diet/Numberology",
-
   // Start quests when able
   "Knob/Start",
   "McLargeHuge/Trapper Request",
+  "McLargeHuge/Ores",
+  "Knob/Outskirts",
+  "Knob/Open Knob",
 
   // Unlock island to start YRing
   "Misc/Unlock Island Submarine",
   "Misc/Unlock Island",
 
   // Grind tasks until level 11
+  "Bat/Use Sonar If Cheap",
   "Manor/Kitchen",
   "Mosquito/Burn Delay",
   "Macguffin/Compass", // Unlock desert for ultrahydrated use
@@ -60,7 +67,7 @@ export const routing: string[] = [
   "War/Flyers End", // End the flyers quest ASAP in case of tracking errors
   "Hidden City/Forest Coin", // First to get meat
   "Hidden City/Forest Map",
-  "Hidden City/Forest Fertilizer",
+  // "Hidden City/Forest Fertilizer", // Just buy this
   "Hidden City/Forest Sapling", // Last to sell bar skins
   "Manor/Billiards",
   "Friar/Finish",
@@ -70,7 +77,6 @@ export const routing: string[] = [
   "Palindome/Copperhead",
 
   // Do summons when ready
-  "Summon/Mountain Man",
   "Summon/Astrologer Of Shub-Jigguwatt",
   "Summon/Astronomer",
   "Summon/Camel's Toe",
@@ -94,11 +100,9 @@ export const routing: string[] = [
 
   // Get and use clovers
   "Misc/Hermit Clover",
-  "McLargeHuge/Trapper Return",
   "Palindome/Protesters",
 
   // Second -combat group
-  "Hidden City/Banish Janitors",
   "Mosquito/Finish",
   "Crypt/Cranny",
   "Giant/Basement Finish",
@@ -144,7 +148,6 @@ export const routing: string[] = [
   "Crypt/Nook",
   "Orc Chasm/ABoo Clues",
   "Digital/Hero",
-  "Orc Chasm/Oil Jar",
   "Macguffin/Middle Chamber", // Avoid Eagle beast banish!
   "Orc Chasm/Twin Init Search",
   "Orc Chasm/Twin Init", // Use Eagle dude banish

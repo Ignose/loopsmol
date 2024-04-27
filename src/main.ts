@@ -47,8 +47,8 @@ export function main(command?: string): void {
   printVersionInfo();
   if (args.version) return;
 
-  if (myPath() !== $path`A Shrunken Adventurer am I` && !args.debug.list)
-    throw `You are not currently in a Shrunken Adventurer run. Please start one.`;
+  if (myPath() !== $path.none && !args.debug.list)
+    throw `You are not currently in a Casual run. Please start one.`;
 
   const set_time_now = get(time_property, -1) === -1;
   if (set_time_now) set(time_property, gametimeToInt());
@@ -92,7 +92,7 @@ export function main(command?: string): void {
   }
 
   if (step("questL13Final") > 11) {
-    print("Shrunken Adventurer complete!", "purple");
+    print("Casual complete!", "purple");
   }
   print(`   Adventures used: ${turnsPlayed()}`, "purple");
   print(`   Adventures remaining: ${myAdventures()}`, "purple");
@@ -160,16 +160,14 @@ function listTasks(engine: Engine, show_phyla = false): void {
         if (task.combat?.can("banish")) {
           for (const monster of getMonsters(task.do)) {
             debug(
-              `  * ${
-                task.combat.currentStrategy(monster) ?? task.combat.getDefaultAction() ?? "ignore"
+              `  * ${task.combat.currentStrategy(monster) ?? task.combat.getDefaultAction() ?? "ignore"
               } ${monster.name} ${monster.phylum}`
             );
           }
         } else {
           for (const monster of getMonsters(task.do)) {
             debug(
-              `  * ${
-                task.combat?.currentStrategy(monster) ?? task.combat?.getDefaultAction() ?? "ignore"
+              `  * ${task.combat?.currentStrategy(monster) ?? task.combat?.getDefaultAction() ?? "ignore"
               } ${monster.name} ${monster.phylum}`,
               "grey"
             );

@@ -5,14 +5,12 @@ import {
   equippedItem,
   getProperty,
   haveEquipped,
-  inHardcore,
   Item,
   itemAmount,
   mallPrice,
   myClass,
   myTurncount,
   numericModifier,
-  pullsRemaining,
   runChoice,
   storageAmount,
   totalTurnsPlayed,
@@ -121,8 +119,6 @@ const heroKeys: KeyTask[] = [
       !underStandard() &&
       !get("dailyDungeonDone") &&
       !get("_dailyDungeonMalwareUsed") &&
-      ((!inHardcore() && (pullsRemaining() > 0 || myTurncount() >= 1000)) ||
-        have($item`daily dungeon malware`)) &&
       (!have($item`Deck of Every Card`) || !have($skill`Lock Picking`)),
     completed: () => get("dailyDungeonDone") || get("_dailyDungeonMalwareUsed"),
     after: [],
@@ -145,7 +141,7 @@ const heroKeys: KeyTask[] = [
   {
     which: Keys.Zap,
     possible: () => get("lastZapperWandExplosionDay") <= 0,
-    after: ["Wand/Wand", "Pull/Key Zappable"],
+    after: ["Wand/Wand"],
     completed: () => get("lastZapperWandExplosionDay") >= 1 || get("_zapCount") >= 1,
     do: () => {
       unequipAcc(keyStrategy.getZapChoice(0));
@@ -159,7 +155,7 @@ const heroKeys: KeyTask[] = [
   {
     which: Keys.Zap2,
     possible: () => get("lastZapperWandExplosionDay") <= 0,
-    after: ["Wand/Wand", "Keys/Zap", "Pull/Key Zappable 2"],
+    after: ["Wand/Wand", "Keys/Zap"],
     completed: () => get("lastZapperWandExplosionDay") >= 1 || get("_zapCount") >= 2,
     do: () => {
       unequipAcc(keyStrategy.getZapChoice(1));

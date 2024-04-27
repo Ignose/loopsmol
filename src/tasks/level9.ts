@@ -239,7 +239,7 @@ const Twin: Task[] = [
   },
   {
     name: "Twin Oil Search",
-    after: ["Start Peaks", "Oil Jar"],
+    after: ["Start Peaks"],
     ready: () => !have($item`rusty hedge trimmers`),
     completed: () => !!(get("twinPeakProgress") & 4),
     do: $location`Twin Peak`,
@@ -253,7 +253,7 @@ const Twin: Task[] = [
   },
   {
     name: "Twin Oil",
-    after: ["Start Peaks", "Oil Jar"],
+    after: ["Start Peaks"],
     ready: () => have($item`rusty hedge trimmers`),
     completed: () => !!(get("twinPeakProgress") & 4),
     do: () => {

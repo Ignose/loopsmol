@@ -65,7 +65,6 @@ import { args } from "../args";
 import { killMacro } from "./combat";
 import { BanishState } from "./state";
 import { customRestoreMp } from "./moods";
-import { oresNeeded } from "../tasks/level8";
 import { Task } from "./task";
 
 export interface Resource {
@@ -843,12 +842,6 @@ export const backupTargets: BackupTarget[] = [
       args.minor.skipbackups,
     outfit: { modifier: "item" },
     limit_tries: 3,
-  },
-  {
-    monster: $monster`mountain man`,
-    completed: () => oresNeeded() === 0 || args.minor.skipbackups,
-    outfit: { modifier: "item" },
-    limit_tries: 2,
   },
   {
     monster: $monster`Eldritch Tentacle`,

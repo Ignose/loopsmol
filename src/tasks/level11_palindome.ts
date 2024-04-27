@@ -9,6 +9,7 @@ import {
   myHash,
   myMaxhp,
   restoreHp,
+  retrieveItem,
   runChoice,
   use,
   useSkill,
@@ -139,7 +140,7 @@ const Copperhead: Task[] = [
   },
   {
     name: "Cold Snake",
-    after: ["Copperhead Start", "McLargeHuge/Trapper Return"],
+    after: ["Copperhead Start", "McLargeHuge/Trapper Request"],
     ready: () => shenItem($item`The First Pizza`) && !get("noncombatForcerActive"),
     completed: () =>
       step("questL11Shen") === 999 ||
@@ -268,7 +269,7 @@ const Zepplin: Task[] = [
   },
   {
     name: "Protesters",
-    after: ["Protesters Start", "Misc/Hermit Clover", "McLargeHuge/Clover Ore"],
+    after: ["Protesters Start", "Misc/Hermit Clover"],
     ready: () =>
       canEquip($item`transparent pants`) &&
       (itemAmount($item`11-leaf clover`) > cloversToSave() ||
@@ -509,10 +510,10 @@ const Dome: Task[] = [
   },
   {
     name: "Open Alarm",
-    after: ["Alarm Gem", "Palindome Nuts", "Grove"],
+    after: ["Alarm Gem", "Grove"],
     completed: () => step("questL11Palindome") >= 5,
     do: () => {
-      if (!have($item`wet stunt nut stew`)) create($item`wet stunt nut stew`);
+      if (!have($item`wet stunt nut stew`)) retrieveItem($item`wet stunt nut stew`);
       visitUrl("place.php?whichplace=palindome&action=pal_mrlabel");
     },
     outfit: { equip: $items`Talisman o' Namsilat` },

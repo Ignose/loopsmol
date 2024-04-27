@@ -21,11 +21,13 @@ import { DietQuest } from "./diet";
 import { Task } from "../engine/task";
 import { getTasks } from "grimoire-kolmafia";
 import { args } from "../args";
+import { LevelingQuest } from "./leveling";
 
 export function all_tasks(): Task[] {
   const quests = [
     TootQuest,
     MiscQuest,
+    LevelingQuest,
     DietQuest,
     WandQuest,
     KeysQuest,
