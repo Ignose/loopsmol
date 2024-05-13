@@ -90,7 +90,7 @@ const Flyers: Task[] = [
   {
     name: "Flyers Start",
     after: ["Enrage"],
-    completed: () => have($item`rock band flyers`) || get("sidequestArenaCompleted") !== "none",
+    completed: () => have($item`rock band flyers`) || get("sidequestArenaCompleted") !== "none" || get("hippiesDefeated") >= 1000,
     outfit: { equip: $items`beer helmet, distressed denim pants, bejeweled pledge pin` },
     do: (): void => {
       visitUrl("bigisland.php?place=concert&pwd");
@@ -103,7 +103,7 @@ const Flyers: Task[] = [
     after: ["Flyers Start"],
     priority: () => Priorities.Free,
     ready: () => flyersDone(), // Buffer for mafia tracking
-    completed: () => get("sidequestArenaCompleted") !== "none",
+    completed: () => get("sidequestArenaCompleted") !== "none" || get("hippiesDefeated") >= 1000,
     outfit: { equip: $items`beer helmet, distressed denim pants, bejeweled pledge pin` },
     do: (): void => {
       visitUrl("bigisland.php?place=concert&pwd");
@@ -136,7 +136,7 @@ const Lighthouse: Task[] = [
       itemAmount($item`barrel of gunpowder`) >= 5 ||
       get("sidequestLighthouseCompleted") !== "none" ||
       !have($item`backup camera`) ||
-      !have($item`Fourth of May Cosplay Saber`),
+      !have($item`Fourth of May Cosplay Saber`) || get("hippiesDefeated") >= 1000,
     priority: (): Priority => {
       if (AutumnAton.have()) {
         if ($location`Sonofa Beach`.turnsSpent === 0) return Priorities.GoodAutumnaton;
@@ -205,7 +205,7 @@ const Lighthouse: Task[] = [
       return Priorities.None;
     },
     completed: () =>
-      itemAmount($item`barrel of gunpowder`) >= 5 || get("sidequestLighthouseCompleted") !== "none",
+      itemAmount($item`barrel of gunpowder`) >= 5 || get("sidequestLighthouseCompleted") !== "none" || get("hippiesDefeated") >= 1000,
     do: $location`Sonofa Beach`,
     outfit: { modifier: "+combat" },
     combat: new CombatStrategy().kill($monster`lobsterfrogman`),
@@ -216,7 +216,7 @@ const Lighthouse: Task[] = [
   {
     name: "Lighthouse End",
     after: ["Lighthouse Basic"],
-    completed: () => get("sidequestLighthouseCompleted") !== "none",
+    completed: () => get("sidequestLighthouseCompleted") !== "none" || get("hippiesDefeated") >= 1000,
     outfit: { equip: $items`beer helmet, distressed denim pants, bejeweled pledge pin` },
     do: (): void => {
       visitUrl("bigisland.php?place=lighthouse&action=pyro&pwd");
@@ -230,7 +230,7 @@ const Junkyard: Task[] = [
   {
     name: "Junkyard Start",
     after: ["Enrage"],
-    completed: () => have($item`molybdenum magnet`) || get("sidequestJunkyardCompleted") !== "none",
+    completed: () => have($item`molybdenum magnet`) || get("sidequestJunkyardCompleted") !== "none" || get("hippiesDefeated") >= 1000,
     outfit: { equip: $items`beer helmet, distressed denim pants, bejeweled pledge pin` },
     do: (): void => {
       visitUrl("bigisland.php?action=junkman&pwd");
@@ -245,7 +245,7 @@ const Junkyard: Task[] = [
       fillHp();
       customRestoreMp(50);
     },
-    completed: () => have($item`molybdenum hammer`) || get("sidequestJunkyardCompleted") !== "none",
+    completed: () => have($item`molybdenum hammer`) || get("sidequestJunkyardCompleted") !== "none" || get("hippiesDefeated") >= 1000,
     acquire: [{ item: $item`seal tooth` }],
     outfit: {
       equip: $items`beer helmet, distressed denim pants, bejeweled pledge pin`,
@@ -282,7 +282,7 @@ const Junkyard: Task[] = [
       customRestoreMp(50);
     },
     completed: () =>
-      have($item`molybdenum crescent wrench`) || get("sidequestJunkyardCompleted") !== "none",
+      have($item`molybdenum crescent wrench`) || get("sidequestJunkyardCompleted") !== "none" || get("hippiesDefeated") >= 1000,
     acquire: [{ item: $item`seal tooth` }],
     outfit: {
       equip: $items`beer helmet, distressed denim pants, bejeweled pledge pin`,
@@ -319,7 +319,7 @@ const Junkyard: Task[] = [
       fillHp();
       customRestoreMp(50);
     },
-    completed: () => have($item`molybdenum pliers`) || get("sidequestJunkyardCompleted") !== "none",
+    completed: () => have($item`molybdenum pliers`) || get("sidequestJunkyardCompleted") !== "none" || get("hippiesDefeated") >= 1000,
     outfit: {
       equip: $items`beer helmet, distressed denim pants, bejeweled pledge pin`,
       familiar: have($familiar`Reagnimated Gnome`) ? $familiar`Reagnimated Gnome`
@@ -355,7 +355,7 @@ const Junkyard: Task[] = [
       customRestoreMp(50);
     },
     completed: () =>
-      have($item`molybdenum screwdriver`) || get("sidequestJunkyardCompleted") !== "none",
+      have($item`molybdenum screwdriver`) || get("sidequestJunkyardCompleted") !== "none" || get("hippiesDefeated") >= 1000,
     acquire: [{ item: $item`seal tooth` }],
     outfit: {
       equip: $items`beer helmet, distressed denim pants, bejeweled pledge pin`,
@@ -387,7 +387,7 @@ const Junkyard: Task[] = [
   {
     name: "Junkyard End",
     after: ["Junkyard Hammer", "Junkyard Wrench", "Junkyard Pliers", "Junkyard Screwdriver"],
-    completed: () => get("sidequestJunkyardCompleted") !== "none",
+    completed: () => get("sidequestJunkyardCompleted") !== "none" || get("hippiesDefeated") >= 1000,
     outfit: {
       equip: $items`beer helmet, distressed denim pants, bejeweled pledge pin`,
       familiar: have($familiar`Reagnimated Gnome`) ? $familiar`Reagnimated Gnome`
@@ -415,7 +415,8 @@ const Orchard: Task[] = [
       have($item`filthworm royal guard scent gland`) ||
       have($effect`Filthworm Guard Stench`) ||
       have($item`heart of the filthworm queen`) ||
-      get("sidequestOrchardCompleted") !== "none",
+      get("sidequestOrchardCompleted") !== "none" ||
+      get("hippiesDefeated") >= 1000,
     do: $location`The Hatching Chamber`,
     outfit: () => {
       if (yellowRayPossible())
@@ -447,7 +448,8 @@ const Orchard: Task[] = [
       have($item`filthworm royal guard scent gland`) ||
       have($effect`Filthworm Guard Stench`) ||
       have($item`heart of the filthworm queen`) ||
-      get("sidequestOrchardCompleted") !== "none",
+      get("sidequestOrchardCompleted") !== "none" ||
+      get("hippiesDefeated") >= 1000,
     do: $location`The Feeding Chamber`,
     outfit: () => {
       if (yellowRayPossible())
@@ -482,7 +484,8 @@ const Orchard: Task[] = [
       have($item`filthworm royal guard scent gland`) ||
       have($effect`Filthworm Guard Stench`) ||
       have($item`heart of the filthworm queen`) ||
-      get("sidequestOrchardCompleted") !== "none",
+      get("sidequestOrchardCompleted") !== "none" ||
+      get("hippiesDefeated") >= 1000,
     do: $location`The Royal Guard Chamber`,
     effects: $effects`Filthworm Drone Stench`,
     outfit: () => {
@@ -514,7 +517,7 @@ const Orchard: Task[] = [
     name: "Orchard Queen",
     after: ["Orchard Guard"],
     completed: () =>
-      have($item`heart of the filthworm queen`) || get("sidequestOrchardCompleted") !== "none",
+      have($item`heart of the filthworm queen`) || get("sidequestOrchardCompleted") !== "none" || get("hippiesDefeated") >= 1000,
     do: $location`The Filthworm Queen's Chamber`,
     effects: $effects`Filthworm Guard Stench`,
     outfit: () =>
@@ -528,7 +531,7 @@ const Orchard: Task[] = [
   {
     name: "Orchard Finish",
     after: ["Orchard Queen", "Open Orchard"],
-    completed: () => get("sidequestOrchardCompleted") !== "none",
+    completed: () => get("sidequestOrchardCompleted") !== "none" || get("hippiesDefeated") >= 1000,
     outfit: { equip: $items`beer helmet, distressed denim pants, bejeweled pledge pin` },
     do: (): void => {
       visitUrl("bigisland.php?place=orchard&action=stand&pwd");
@@ -542,7 +545,7 @@ const Nuns: Task[] = [
   {
     name: "Nuns",
     after: ["Open Nuns"],
-    completed: () => get("sidequestNunsCompleted") !== "none",
+    completed: () => get("sidequestNunsCompleted") !== "none" || get("hippiesDefeated") >= 1000,
     priority: () => (have($effect`Winklered`) ? Priorities.Effect : Priorities.None),
     prepare: () => {
       if (have($item`SongBoom™ BoomBox`) && get("boomBoxSong") !== "Total Eclipse of Your Meat")
