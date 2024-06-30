@@ -2112,7 +2112,7 @@ hasown@^2.0.0:
   dependencies:
     function-bind "^1.1.2"
 
-html-entities@^2.4.0:
+html-entities@^2.4.0, html-entities@^2.5.2:
   version "2.5.2"
   resolved "https://registry.yarnpkg.com/html-entities/-/html-entities-2.5.2.tgz#201a3cf95d3a15be7099521620d19dfb4f65359f"
   integrity sha512-K//PSRMQk4FZ78Kyau+mZurHn3FH0Vwr+H36eE0rPbeYkRRi9YxceYPhuN60UwWorxyKHhqoAJl2OFKa4BVtaA==
@@ -2295,12 +2295,12 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
-libram@^0.8.24:
-  version "0.8.26"
-  resolved "https://registry.yarnpkg.com/libram/-/libram-0.8.26.tgz#5c2b317c24d403f0ce1d4523209224f36feafb80"
-  integrity sha512-yScf3r+WaEr39jhLM10wlM9Kqic7WZEdAW8YcvKX4fBtpm5nxU3QBSSKK3wB047c2KESpZumiRXpnPdEickjbA==
+libram@^0.9.1:
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/libram/-/libram-0.9.1.tgz#bcf182199f39d4a919bc8432ab777fd1d435d975"
+  integrity sha512-8wsGmqy/CW+Fv7WVSg8zefEifWtBX1l9pxC6i2S1MLAoTUP4lWo+8oJPXEJeMzLoxRDVpXKhZFvVjy4iRH1Dhg==
   dependencies:
-    html-entities "^2.4.0"
+    html-entities "^2.5.2"
 
 loader-runner@^4.2.0:
   version "4.3.0"

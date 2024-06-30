@@ -224,7 +224,7 @@ export const LevelingQuest: Quest = {
       after: [],
       ready: () => Witchess.have(),
       completed: () => Witchess.fightsDone() >= 5 || myLevel() >= args.minor.levelto,
-      do: () => Witchess.fightPiece($monster`Witchess Knight`),
+      do: () => Witchess.fightPiece($monster`Witchess Knight`, ""),
       combat: new CombatStrategy().killHard(),
       outfit: {
         modifier: "mainstat, 4exp, monster level percent",

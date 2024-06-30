@@ -326,7 +326,7 @@ function shotglassMenu() {
 
 function consumeDiet(diet: Diet<MenuData>, mpa: number) {
   const plannedDietEntries = diet.entries.sort(
-    (a, b) => itemPriority(b.menuItems) - itemPriority(a.menuItems)
+    (a, b) => itemPriority([...b.menuItems]) - itemPriority([...a.menuItems])
   );
 
   print(`Diet Plan:`);
